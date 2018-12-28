@@ -1,5 +1,5 @@
-from API import VkAPI as API, APIKeys as k
-from SearchLogic import FirstLevel as algo
+from vkconnections import VkAPI as API, APIKeys as k
+from vkconnections import FirstLevel as algo
 
 
 # works for get way between users only

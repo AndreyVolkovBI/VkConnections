@@ -1,4 +1,4 @@
-from API import VkAPI as API
+from vkconnections import VkAPI as API
 import threading
 
 

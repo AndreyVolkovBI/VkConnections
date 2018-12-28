@@ -1,5 +1,5 @@
-from API import VkAPI as API
-from SearchLogic import SecondLevel as division, Helper as h
+from vkconnections import VkAPI as API
+from vkconnections import SecondLevel as division, Helper as h
 import threading
 
 firstPair, secondPair = {1: "", 2: ""}, {1: "", 2: ""}

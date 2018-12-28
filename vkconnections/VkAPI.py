@@ -2,7 +2,7 @@ import requests
 import math
 import time
 from json import loads
-from API import APIKeys as c
+from vkconnections import APIKeys as c
 
 keys = {}
 

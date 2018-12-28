@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="vkconnections",
-    version="0.0.1",
+    version="0.0.8",
     author="Andrey Volkov",
     author_email="andrey@volkov.tech",
     description="Finding the shortest path from one vk user to another through friends.",
