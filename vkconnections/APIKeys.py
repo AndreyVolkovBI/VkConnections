@@ -1,11 +1,12 @@
-firstPair = {1: "", 2: ""}
-secondPair = {1: "", 2: ""}
+first_pair = {1: "", 2: ""}
+second_pair = {1: "", 2: ""}
 
-def setKeys(keys):
-	global firstPair
-	global secondPair
-	firstPair = {1: keys[0], 2: keys[1]}
-	secondPair = {1: keys[2], 2: keys[3]}
+
+def set_keys(keys):
+    global first_pair
+    global second_pair
+    first_pair = {1: keys[0], 2: keys[1]}
+    second_pair = {1: keys[2], 2: keys[3]}
 
 
 # Vk API Constants
@@ -17,15 +18,10 @@ access_token = 'access_token='
 version = 'v=5.92'
 
 # users.get
-usersGet = api_url + method_name_user + 'user_ids=' + '{0}' + '&fields=photo_100' + '&' + access_token + '{1}' + '&' + version
+users_get = api_url + method_name_user + 'user_ids=' + '{0}' + '&fields=photo_100' + '&' + access_token + '{1}' + '&' + version
 
 # friends.get
-friendsGet = api_url + method_name_friends + 'user_id=' + '{0}' + '&' + access_token + '{1}' + '&' + version
+friends_get = api_url + method_name_friends + 'user_id=' + '{0}' + '&' + access_token + '{1}' + '&' + version
 
 # execute
-executeGet = api_url + method_name_execute + 'code={}&' + access_token + '{}' + '&' + version
-
-# errors
-noSuchUser = {'error': {'code': '001', 'message': 'The user is not found'}}
-noFriends = {'error': {'code': '002', 'message': 'The user either does not have or has hidden friends'}}
-tooFar = {'error': {'code': '002', 'message': 'The distance between two users is too far'}}
+execute_get = api_url + method_name_execute + 'code={}&' + access_token + '{}' + '&' + version

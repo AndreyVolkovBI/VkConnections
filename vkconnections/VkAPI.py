@@ -1,89 +1,64 @@
-import requests
 import math
 import time
+import requests
 from json import loads
-from vkconnections import APIKeys as c
-
-keys = {}
-
-def setKeys(vkKeys):
-    global keys
-    keys = vkKeys
+from vkconnections import APIKeys
 
 
-def getUsers(usersUrl):
-    global keys
-    temp = None
-    count = 0
-    while temp is None:
-        response = requests.get(c.usersGet.format(str(usersUrl), keys[0])).text
+def get_users(users_url):
+    return get_request(APIKeys.users_get.format(str(users_url), APIKeys.first_pair[1]))
+
+
+def get_friends(id):
+    response = get_request(APIKeys.friends_get.format(str(id), APIKeys.first_pair[1]))
+    return response.get('items')
+
+
+def get_execute(code, token):
+    return get_request(APIKeys.execute_get.format(code, token))
+
+
+def get_request(url):
+    response, count = None, 0
+    while response is None:
+        response = requests.get(url).text
         response = loads(response)
-        temp = response.get('response')
+        response = response.get('response')
         if count > 1:
             time.sleep(1)
         count += 1
         if count == 50:
-            return None
-    return response.get('response')
+            raise RuntimeError("Failed to execute get request for url: " + url)
+        elif response:
+            return response
 
 
-def getFriends(id):
-    temp = None
-    count = 0
-    while temp is None:
-        response = requests.get(c.friendsGet.format(str(id), keys[0])).text
-        response = loads(response)
-        temp = response.get('response')
-        if count > 1:
-            time.sleep(1)
-        count += 1
-        if count == 50:
-            return None
-    return response.get('response').get('items')
+def get_vk_script_for_execute(all_the_friends):
+    len_friends = len(all_the_friends)
+    requests_count = len_friends // 25 + math.ceil((len_friends - len_friends // 25 * 25) / 25)
+    output_string = []
+    start_index, end_index = 0, 25
+    for number in range(0, requests_count):
+        request_string = 'return [ '
+        for item in range(start_index, end_index):
+            if len_friends > item:
+                request_string += 'API.friends.get({"user_id": ' + str(all_the_friends[item]) + ' }), '
+        request_string = request_string[0:-2]
+        request_string += ' ];'
+        output_string.append(request_string)
+        start_index += 25
+        end_index += 25
+    return output_string
 
 
-def getExecute(code, token):
-    temp = None
-    count = 0
-    while temp is None:
-        myString = c.executeGet.format(code, token)
-        execute = requests.get(myString).text
-        execute = loads(execute)
-        temp = execute.get('response')
-        if count > 1:
-            time.sleep(1)
-        count += 1
-        if count == 50:
-            return None
-    return execute.get('response')
-
-
-def getVkScriptForExecute(allTheFriends):
-    lenFriends = len(allTheFriends)
-    requestsCount = lenFriends // 25 + math.ceil((lenFriends - lenFriends // 25 * 25) / 25)
-    outputString = []
-    startIndex = 0
-    endIndex = 25
-    for number in range(0, requestsCount):
-        requestString = 'return [ '
-        for item in range(startIndex, endIndex):
-            if lenFriends > item:
-                requestString += 'API.friends.get({"user_id": ' + str(allTheFriends[item]) + ' }), '
-        requestString = requestString[0:-2]
-        requestString += ' ];'
-        outputString.append(requestString)
-        startIndex += 25
-        endIndex += 25
-    return outputString
-
-def getVkScriptForUsersExecute(allTheUsers):
-    requestString = 'return [ '
-    for index in range(len(allTheUsers)):
-        stringOfUsers = ""
-        for item in allTheUsers[index]:
-            stringOfUsers += str(item) + ','
-        stringOfUsers = stringOfUsers[0:-1]
-        requestString += 'API.users.get({"user_ids": "' + stringOfUsers + '", "fields": "photo_100" }), '
-    requestString = requestString[0:-1]
-    requestString += ' ];'
-    return requestString
+def get_vk_script_for_users_execute(all_the_users):
+    request_string = 'return [ '
+    for index in range(len(all_the_users)):
+        users_string = ""
+        for item in all_the_users[index]:
+            users_string += str(item) + ','
+        users_string = users_string[0:-1]
+        request_string += 'API.users.get({"user_ids": "' + users_string + '", "fields": "photo_100" }), '
+    request_string = request_string[0:-1]
+    request_string += ' ];'
+    return request_string

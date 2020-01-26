@@ -1,6 +1,7 @@
 import random
 
-def getPureLink(link):
+
+def get_pure_link(link):
     link = link.strip().lower()
     if 'vk.com/' in link:
         link = link.split('vk.com/')[1]
@@ -12,36 +13,38 @@ def getPureLink(link):
         link = link[2:]
     return link
 
-def checkForNormalLength(friendsUserFrom, friendsUserTo):
-    if len(friendsUserFrom) + len(friendsUserTo) > 1500:
-        if len(friendsUserFrom) > len(friendsUserTo):
-            friendsUserFrom = listCut(friendsUserFrom)
-            friendsUserFrom, friendsUserTo = checkForNormalLength(friendsUserFrom, friendsUserTo)
+
+def check_for_normal_length(friends_user_from, friends_user_to):
+    if len(friends_user_from) + len(friends_user_to) > 1500:
+        if len(friends_user_from) > len(friends_user_to):
+            friends_user_from = list_cut(friends_user_from)
+            friends_user_from, friends_user_to = check_for_normal_length(friends_user_from, friends_user_to)
         else:
-            friendsUserTo = listCut(friendsUserTo)
-            friendsUserFrom, friendsUserTo = checkForNormalLength(friendsUserFrom, friendsUserTo)
-    return friendsUserFrom, friendsUserTo
-
-def listCut(friendsList):
-    random.shuffle(friendsList)
-    cut = len(friendsList) // 2
-    return friendsList[:cut]
+            friends_user_to = list_cut(friends_user_to)
+            friends_user_from, friends_user_to = check_for_normal_length(friends_user_from, friends_user_to)
+    return friends_user_from, friends_user_to
 
 
-def clearCircles(circles):
+def list_cut(friends_list):
+    random.shuffle(friends_list)
+    cut = len(friends_list) // 2
+    return friends_list[:cut]
+
+
+def clear_circles(circles):
     circles = {k: v for k, v in circles.items() if v is not None}
     circles = {k: v for k, v in circles.items() if v is not False}
     return circles
 
 
-def getItems(circles):
+def get_items(circles):
     returnDict = {}
     for key in circles:
         returnDict[key] = circles[key].get('items')
     return returnDict
 
 
-def fillAllTheVertices(circles):
+def fill_all_the_vertices(circles):
     tempDict = {}
     for item in circles:
         for index in circles[item]:
@@ -54,27 +57,29 @@ def fillAllTheVertices(circles):
         circles[item] = tempDict[item]
     return circles
 
-def makeListsNicer(outputList):
-    resultList = []
-    tempList = []
-    for index in outputList:
-        for item in index:
-            tempList.append(
-                {'id': item['id'],
-                 'full_name': item['first_name'] + ' ' + item['last_name'],
-                 'photo': item['photo_100']})
-        resultList.append(tempList)
-        tempList = []
-    return resultList
 
-def BFS(s, Adj):
+def make_lists_nicer(output_list):
+    result_list, temp_list = [], []
+    for index in output_list:
+        for item in index:
+            temp_list.append({
+                'id': item['id'],
+                'full_name': item['first_name'] + ' ' + item['last_name'],
+                'photo': item['photo_100']
+            })
+        result_list.append(temp_list)
+        temp_list = []
+    return result_list
+
+
+def bfs(s, adjacency):
     parent = {s: None}
     frontier = [s]
     while frontier:
         next = []
         for u in frontier:
-            if u in Adj:
-                for v in Adj[u]:
+            if u in adjacency:
+                for v in adjacency[u]:
                     if v not in parent:
                         parent[v] = u
                         next.append(v)
@@ -82,28 +87,26 @@ def BFS(s, Adj):
     return parent
 
 
-def getWay(parents, listFinal, userTo):
+def get_way(parents, list_final, user_to):
     for item in parents:
-        if item == userTo:
-            listFinal.append(parents[item])
-            getWay(parents, listFinal, parents[item])
-    return listFinal
+        if item == user_to:
+            list_final.append(parents[item])
+            get_way(parents, list_final, parents[item])
+    return list_final
 
 
-def algorithm(parents, userTo):
-    listFinal = []
-    listFinal = getWay(parents, listFinal, userTo)
+def algorithm(parents, user_to):
+    listFinal = get_way(parents, [], user_to)
     if listFinal:
         listFinal.remove(None)
         listFinal.reverse()
-        listFinal.append(userTo)
+        listFinal.append(user_to)
         return listFinal
     else:
         return []
 
 
-def getWayCount(output):
+def get_way_count(output):
     if isinstance(output, list):
         return [len(item) for item in output]
     return None
-
